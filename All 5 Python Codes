@@ -1,0 +1,291 @@
+
+1. A)   Calculating the simple probabilities 
+
+import random
+
+num_trials = int(input("Enter number of trials: "))
+rolls_per_trial = int(input("For each trial, how many rolls: "))
+roll_up_value = int(input("Enter roll-up value (1–6): "))
+
+poss_outcomes = 0
+
+for i in range(num_trials):
+    for j in range(rolls_per_trial):
+        result = random.randint(1, 6)
+        print(result)
+        if result == roll_up_value:
+            poss_outcomes += 1
+
+print("--------")
+
+total_outcomes = num_trials * rolls_per_trial
+
+print(f"Number of times {roll_up_value} appeared in {num_trials} trials "
+      f"of {rolls_per_trial} rolls each: {poss_outcomes}")
+
+print("Probability =", poss_outcomes / total_outcomes)
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+1. b)  Applications of Probability distributions to real life problems 
+
+
+# ---------------------------------------------------------
+# 1(b) Applications of Probability Distributions
+# ---------------------------------------------------------
+
+# -------------------------------
+# Binomial Distribution Example
+# -------------------------------
+from scipy.stats import binom
+
+# Parameters
+n = 10          # Number of trials
+p = 0.5         # Probability of success
+k_success = 2   # Number of successes
+
+# Probability calculation
+prob_2_success = binom.pmf(k_success, n, p)
+
+print("Binomial Distribution Example")
+print(f"Probability of {k_success} successes out of {n} trials: {prob_2_success}")
+print("-------------------------------------------------\n")
+
+
+# -------------------------------
+# Test of Significance
+# -------------------------------
+import pandas as pd
+from scipy import stats
+
+# Load Titanic dataset
+titanic_data = pd.read_csv('train.csv')
+
+# -------------------------------
+# One Sample T-Test
+# -------------------------------
+hypothetical_mean_age = 30
+
+ttest_one_sample = stats.ttest_1samp(
+    titanic_data['Age'].dropna(),
+    hypothetical_mean_age
+)
+
+print("One Sample T-Test:")
+print("T-statistic:", ttest_one_sample.statistic)
+print("p-value:", ttest_one_sample.pvalue)
+print("-------------------------------------------------\n")
+
+
+# -------------------------------
+# Two Independent Samples T-Test
+# -------------------------------
+male_ages = titanic_data[titanic_data['Sex'] == 'male']['Age'].dropna()
+female_ages = titanic_data[titanic_data['Sex'] == 'female']['Age'].dropna()
+
+ttest_two_ind_samples = stats.ttest_ind(male_ages, female_ages)
+
+print("Two Independent Samples T-Test:")
+print("T-statistic:", ttest_two_ind_samples.statistic)
+print("p-value:", ttest_two_ind_samples.pvalue)
+print("-------------------------------------------------\n")
+
+
+# -------------------------------
+# Paired T-Test
+# -------------------------------
+before_fares = titanic_data['Fare'].dropna()
+after_fares = before_fares * 1.2  # 20% increase assumption
+
+ttest_paired = stats.ttest_rel(before_fares, after_fares)
+
+print("Paired T-Test:")
+print("T-statistic:", ttest_paired.statistic)
+print("p-value:", ttest_paired.pvalue)
+print("-------------------------------------------------\n")
+
+
+# -------------------------------
+# ANOVA Test
+# -------------------------------
+anova_result = stats.f_oneway(
+    titanic_data[titanic_data['Pclass'] == 1]['Fare'].dropna(),
+    titanic_data[titanic_data['Pclass'] == 2]['Fare'].dropna(),
+    titanic_data[titanic_data['Pclass'] == 3]['Fare'].dropna()
+)
+
+print("ANOVA Test Result:")
+print("F-statistic:", anova_result.statistic)
+print("p-value:", anova_result.pvalue)
+print("-------------------------------------------------\n")
+
+
+# -------------------------------
+# Chi-Square Test
+# -------------------------------
+chi2_table = pd.crosstab(titanic_data['Survived'], titanic_data['Pclass'])
+
+chi2_result = stats.chi2_contingency(chi2_table)
+
+print("Chi-Square Test Result:")
+print("Chi-Square statistic:", chi2_result[0])
+print("p-value:", chi2_result[1])
+print("-------------------------------------------------")
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+program 3: Correlation and Regression analysis  
+
+
+# ---------------------------------------------------------
+# Correlation, Linear Regression & Logistic Regression
+# ---------------------------------------------------------
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.datasets import load_iris
+
+# -------------------------------
+# Generating Sample Data
+# -------------------------------
+np.random.seed(42)
+
+X = np.random.rand(100, 1) * 10        # Independent variable
+y = 2 * X.squeeze() + np.random.randn(100) * 2  # Dependent variable
+
+# -------------------------------
+# Scatter Plot & Correlation
+# -------------------------------
+plt.figure(figsize=(8, 4))
+plt.scatter(X, y)
+plt.title("Scatter Plot")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.grid(True)
+
+correlation_coefficient = np.corrcoef(X.squeeze(), y)[0, 1]
+print("Correlation Coefficient:", correlation_coefficient)
+
+# -------------------------------
+# Linear Regression Model
+# -------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+lin_reg = LinearRegression()
+lin_reg.fit(X_train, y_train)
+
+# Prediction
+y_pred = lin_reg.predict(X_test)
+
+# Model Evaluation
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("Mean Squared Error:", mse)
+print("R-squared Score:", r2)
+
+# Regression Line Plot
+plt.figure(figsize=(8, 4))
+plt.scatter(X_test, y_test)
+plt.plot(X_test, y_pred, linewidth=3)
+plt.title("Linear Regression Prediction")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.grid(True)
+
+# -------------------------------
+# Logistic Regression (Iris Dataset)
+# -------------------------------
+iris = load_iris()
+
+X_iris = iris.data[:, :2]   # First two features
+y_iris = iris.target
+
+log_reg = LogisticRegression(max_iter=200)
+log_reg.fit(X_iris, y_iris)
+
+# -------------------------------
+# Decision Boundary Visualization
+# -------------------------------
+x_min, x_max = X_iris[:, 0].min() - 1, X_iris[:, 0].max() + 1
+y_min, y_max = X_iris[:, 1].min() - 1, X_iris[:, 1].max() + 1
+
+xx, yy = np.meshgrid(
+    np.arange(x_min, x_max, 0.1),
+    np.arange(y_min, y_max, 0.1)
+)
+
+Z = log_reg.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+plt.figure(figsize=(8, 6))
+plt.contourf(xx, yy, Z, alpha=0.4)
+plt.scatter(X_iris[:, 0], X_iris[:, 1], c=y_iris, edgecolor='k')
+plt.title("Logistic Regression (Iris Dataset)")
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.grid(True)
+
+plt.show()
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Pro 4 Normal Distribution Example (Quality Control)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm 
+
+mean = 50
+std_dev = 10
+
+# Generate normal distribution samples
+samples = np.random.normal(mean, std_dev, 1000)
+
+# Plot histogram
+plt.figure(figsize=(8, 6))
+plt.hist(samples, bins=30, density=True, alpha=0.6)
+
+# Plot theoretical normal PDF
+x = np.linspace(mean - 4*std_dev, mean + 4*std_dev, 100)
+plt.plot(x, norm.pdf(x, mean, std_dev), lw=2, label='Normal Distribution')
+
+plt.title('Normal Distribution Example (Quality Control)')
+plt.xlabel('Values')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Pro 5 Exponential Distribution Example (Reliability Analysis)
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import expon 
+
+# Generate exponential samples
+exp_samples = np.random.exponential(scale=2, size=1000)
+
+# Plot histogram
+plt.figure(figsize=(8, 6))
+plt.hist(exp_samples, bins=30, density=True, alpha=0.6)
+
+# Plot theoretical PDF
+x_exp = np.linspace(0, 10, 100)
+plt.plot(x_exp, expon.pdf(x_exp, scale=2), lw=2, label='Exponential Distribution')
+
+plt.title('Exponential Distribution Example (Reliability Analysis)')
+plt.xlabel('Values')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
