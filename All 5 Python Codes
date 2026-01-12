@@ -29,14 +29,6 @@ print("Probability =", poss_outcomes / total_outcomes)
 
 1. b)  Applications of Probability distributions to real life problems 
 
-
-# ---------------------------------------------------------
-# 1(b) Applications of Probability Distributions
-# ---------------------------------------------------------
-
-# -------------------------------
-# Binomial Distribution Example
-# -------------------------------
 from scipy.stats import binom
 
 # Parameters
@@ -51,10 +43,10 @@ print("Binomial Distribution Example")
 print(f"Probability of {k_success} successes out of {n} trials: {prob_2_success}")
 print("-------------------------------------------------\n")
 
+--------------------------------------------------------------------------------------------------------------------------------------------
 
-# -------------------------------
-# Test of Significance
-# -------------------------------
+2) test of significance
+
 import pandas as pd
 from scipy import stats
 
